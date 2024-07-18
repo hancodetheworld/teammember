@@ -10,7 +10,7 @@ function App() {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      const response = await fetch('http://localhost:3001/api/members');
+      const response = await fetch('https://teammember-2.onrender.com/api/members');
       const data = await response.json();
       dispatch(setMembers(data));
     };
