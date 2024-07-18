@@ -1,4 +1,3 @@
-// backend/server/server.mjs
 import express from 'express';
 import cors from 'cors';
 import { connectDB } from './db.mjs';
@@ -7,7 +6,12 @@ import { getMembers, addMember, deleteMember, updateMember } from '../models/mem
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors());
+// 设置 CORS 选项
+const corsOptions = {
+    origin: "https://teammember-3.onrender.com", // 替换为你的前端 URL
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 let db;
