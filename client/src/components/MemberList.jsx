@@ -10,7 +10,7 @@ const MemberList = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/members/${id}`, {
+      const response = await fetch(`http://teammember-2.onrender.com/api/members/${id}`, {
         method: 'DELETE',
       });
       if (response.ok) {
