@@ -1,29 +1,18 @@
-// backend/models/member.mjs
-import mongoose from 'mongoose';
-
-const memberSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  age: Number,
-  imageUrl: String,
-  extraDetail: String
-});
-
-const Member = mongoose.model('Member', memberSchema);
+// src/models/member.js
+import { ObjectId } from 'mongodb';
 
 export const getMembers = async (db) => {
-  return await Member.find({});
+  return await db.collection('members').find().toArray();
 };
 
 export const addMember = async (db, member) => {
-  const newMember = new Member(member);
-  return await newMember.save();
+  return await db.collection('members').insertOne(member);
 };
 
 export const deleteMember = async (db, id) => {
-  return await Member.findByIdAndDelete(id);
+  return await db.collection('members').deleteOne({ _id: new ObjectId(id) });
 };
 
 export const updateMember = async (db, id, updates) => {
-  return await Member.findByIdAndUpdate(id, updates, { new: true });
+  return await db.collection('members').updateOne({ _id: new ObjectId(id) }, { $set: updates });
 };
