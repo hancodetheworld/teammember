@@ -1,4 +1,3 @@
-// backend/server/server.mjs
 import express from 'express';
 import cors from 'cors';
 import { connectDB } from './db.mjs';
@@ -10,13 +9,12 @@ const port = process.env.PORT || 3001;
 const corsOptions = {
   origin: "https://teammember-3.onrender.com", // 替换为你的前端应用的实际域名
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true, // 如果需要处理凭证
+  credentials: true,
   optionsSuccessStatus: 204
 };
+
 app.use(cors(corsOptions));
 app.use(express.json());
-
-let db;
 
 const initialData = [
   {
@@ -38,61 +36,61 @@ const initializeDatabase = async (db) => {
 };
 
 connectDB().then(database => {
-  db = database;
-  initializeDatabase(db); // 初始化数据库
+  initializeDatabase(database);
+
+  app.get('/api/members', async (req, res) => {
+    try {
+      const members = await getMembers(database);
+      res.json(members);
+    } catch (err) {
+      console.error('Error fetching members:', err);
+      res.status(500).send('Server Error');
+    }
+  });
+
+  app.post('/api/members', async (req, res) => {
+    try {
+      const newMember = req.body;
+      console.log('Received new member:', newMember); // 调试信息
+      const result = await addMember(database, newMember);
+      console.log('Insert result:', result); // 调试信息
+      const insertedMember = await database.collection('members').findOne({ _id: result.insertedId });
+      res.status(201).json(insertedMember);
+    } catch (err) {
+      console.error('Error adding member:', err);
+      res.status(500).send('Server Error');
+    }
+  });
+
+  app.delete('/api/members/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      await deleteMember(database, id);
+      res.status(204).send();
+    } catch (err) {
+      console.error('Error deleting member:', err);
+      res.status(500).send('Server Error');
+    }
+  });
+
+  app.put('/api/members/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      await updateMember(database, id, updates);
+      res.json({ msg: 'Member updated' });
+    } catch (err) {
+      console.error('Error updating member:', err);
+      res.status(500).send('Server Error');
+    }
+  });
+
+  app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
 }).catch(err => {
   console.error('Error connecting to database:', err);
-});
-
-app.get('/api/members', async (req, res) => {
-  try {
-    const members = await getMembers(db);
-    res.json(members);
-  } catch (err) {
-    console.error('Error fetching members:', err);
-    res.status(500).send('Server Error');
-  }
-});
-
-app.post('/api/members', async (req, res) => {
-  try {
-    const newMember = req.body;
-    console.log('Received new member:', newMember); // 调试信息
-    const result = await addMember(db, newMember);
-    console.log('Insert result:', result); // 调试信息
-    const insertedMember = await db.collection('members').findOne({ _id: result.insertedId });
-    res.status(201).json(insertedMember);
-  } catch (err) {
-    console.error('Error adding member:', err); // 错误日志
-    res.status(500).send('Server Error');
-  }
-});
-
-app.delete('/api/members/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    await deleteMember(db, id);
-    res.status(204).send();
-  } catch (err) {
-    console.error('Error deleting member:', err); // 错误日志
-    res.status(500).send('Server Error');
-  }
-});
-
-app.put('/api/members/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
-    await updateMember(db, id, updates);
-    res.json({ msg: 'Member updated' });
-  } catch (err) {
-    console.error('Error updating member:', err); // 错误日志
-    res.status(500).send('Server Error');
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  process.exit(1); // 连接数据库失败时退出进程
 });
 
 export default app;
