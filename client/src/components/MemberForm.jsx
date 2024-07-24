@@ -20,7 +20,7 @@ const MemberForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://teammember-2.onrender.com/api/members', {
+      const response = await fetch('https://teammember-2.onrender.com/api/members', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
