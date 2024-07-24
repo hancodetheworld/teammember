@@ -5,10 +5,13 @@ require("dotenv").config();
 
 const app = express();
 
-// middleware
+
 const corsOptions = {
-    origin: "https://teammember-3.onrender.com" // frontend URI (ReactJS)
-}
+    origin: "https://teammember-3.onrender.com", // 替换为你的前端应用的实际域名
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true, // 如果需要处理凭证
+    optionsSuccessStatus: 204
+};
 app.use(express.json());
 app.use(cors(corsOptions));
 

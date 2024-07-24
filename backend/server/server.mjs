@@ -6,8 +6,14 @@ import { getMembers, addMember, deleteMember, updateMember } from '../models/mem
 
 const app = express();
 const port = process.env.PORT || 3001;
-
-app.use(cors());
+const cors = require('cors');
+const corsOptions = {
+  origin: "https://teammember-3.onrender.com", // 替换为你的前端应用的实际域名
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // 如果需要处理凭证
+  optionsSuccessStatus: 204
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 let db;
